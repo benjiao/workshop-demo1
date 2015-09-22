@@ -1,0 +1,28 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+APP_NAME = "python-demo"
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  config.vm.box = "precise32"
+  config.vm.box_url = "http://files.vagrantup.com/precise64.box"
+
+  config.vm.synced_folder "../src", "/home/vagrant/Projects"
+
+  config.vm.hostname = APP_NAME
+  
+  config.vm.network "forwarded_port", guest: 22, host: 2222, id: "ssh"
+  config.vm.network "forwarded_port", guest:5000, host:5000, id: "flask"
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.name = APP_NAME
+    vb.customize ["modifyvm", :id, "--memory", "512"]
+  end
+  
+  # Workaround for "stdin: is not a tty" issue
+  config.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
+  
+  config.vm.provision :shell, path: "bootstrap.sh"
+end
+
