@@ -13,7 +13,14 @@ def index():
 
 @app.route('/user')
 def user_list():
-    return "<h1>This is the user page</h1>"
+
+    users = [
+        {'id': 1, 'username': 'benjie', 'name': 'Benjie Jiao', 'is_active': True},
+        {'id': 2, 'username': 'luke', 'name': 'Luke Skywalker', 'is_active': True},
+        {'id': 3, 'username': 'han', 'name': 'Han Solo', 'is_active': False}
+    ]
+
+    return render_template('user.html', users=users)
 
 
 @app.route('/user/<username>')

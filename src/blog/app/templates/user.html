@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+
+<table class="table">
+    <tr>
+        <th>ID</th>
+        <th>Username</th>
+        <th>Name</th>
+        <th>Status</th>
+    </tr>
+
+    {% for user in users %}
+    <tr>
+        <td>
+            {{user.id}}
+        </td>
+        <td>
+            <a href="{{url_for('user_profile', username=user.username)}}">
+                {{user.username}}
+            </a>
+        </td>
+        <td>
+            <a href="{{url_for('user_profile', username=user.username)}}">
+                {{user.name}}
+            </a>
+        </td>
+        <td>
+            {% if user.is_active == True %}
+                <span class="label label-success">Active</span>
+            {% else %}
+                <span class="label label-default">Inactive</span>
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+
+</table>
+{% endblock %}
