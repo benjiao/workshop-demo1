@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS `blogdb`.`user` (
   `username` VARCHAR(255) NULL COMMENT '',
   `name` VARCHAR(255) NULL COMMENT '',
   `password` VARCHAR(100) NULL COMMENT '',
+  `is_active` TINYINT(1) NULL COMMENT '',
   PRIMARY KEY (`id`)  COMMENT '')
 ENGINE = InnoDB;
 

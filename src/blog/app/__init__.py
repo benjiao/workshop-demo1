@@ -1,3 +1,5 @@
+import json
+
 from flask import Flask
 from flask import render_template
 from datetime import datetime
@@ -8,7 +10,56 @@ from flask import request
 from functools import wraps
 from flask import redirect
 
+from flask import g
+
+import MySQLdb
+import MySQLdb.cursors
+
+from app import blog_db
+
 app = Flask(__name__)
+
+
+def connect_db():
+    conn = MySQLdb.connect(
+        host=app.config.get('MYSQL_HOST'),
+        user=app.config.get('MYSQL_USER'),
+        passwd=app.config.get('MYSQL_PASSWD'),
+        db=app.config.get('MYSQL_DB'),
+        cursorclass=MySQLdb.cursors.DictCursor,
+        use_unicode=True,
+        charset='UTF8'
+    )
+    return conn
+
+
+@app.before_request
+def before_request():
+    """
+    Before Request contains scripts to run before executing a request.
+    Here, a database connection for the request is created.
+
+    Note: g.db can be used within the route function called
+    """
+    g.conn = connect_db()
+    g.db = blog_db.BlogDB(conn=g.conn)
+
+
+@app.teardown_request
+def teardown_request(exception):
+    """
+    Cleanup scripts for every requests.
+    Includes closing of database connections.
+    """
+
+    conn = getattr(g, 'conn', None)
+    db = getattr(g, 'db', None)
+
+    if db is not None:
+        db = None
+
+    if conn is not None:
+        conn.close()
 
 
 def login_required(test):
@@ -33,7 +84,6 @@ def index():
 @app.route('/user')
 @login_required
 def user_list():
-
     users = [
         {'id': 1, 'username': 'benjie', 'name': 'Benjie Jiao', 'is_active': True},
         {'id': 2, 'username': 'luke', 'name': 'Luke Skywalker', 'is_active': True},
@@ -60,17 +110,22 @@ def login_page():
 
 @app.route('/login', methods=['POST'])
 def login_submit():
+
     username = request.form["username"]
     password = request.form["password"]
 
-    app.logger.info("Someone tried to login! %s", username)
+    user = g.db.getUserByUsername(username=username)
 
-    if password != "password":
+    app.logger.info("Someone tried to login! %s", username)
+    app.logger.info("User: %s", json.dumps(user, indent=4))
+
+    if password != user.get("password"):
         return "Failed!"
     else:
         print username
-        session['username'] = "benjie"
-        return "Success! Logged in as %s" % username
+        session['username'] = user.get("username")
+        session['name'] = user.get("name")
+        return redirect('/')
 
 
 @app.route('/logout')
