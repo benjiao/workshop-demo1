@@ -1,5 +1,6 @@
 import json
 
+from flask import flash
 from flask import Flask
 from flask import render_template
 from datetime import datetime
@@ -9,6 +10,7 @@ from flask import session
 from flask import request
 from functools import wraps
 from flask import redirect
+from flask import url_for
 
 from flask import g
 
@@ -84,18 +86,33 @@ def index():
 @app.route('/user')
 @login_required
 def user_list():
-    users = [
-        {'id': 1, 'username': 'benjie', 'name': 'Benjie Jiao', 'is_active': True},
-        {'id': 2, 'username': 'luke', 'name': 'Luke Skywalker', 'is_active': True},
-        {'id': 3, 'username': 'han', 'name': 'Han Solo', 'is_active': False}
-    ]
-
+    users = g.db.getUsers()
     return render_template('user.html', users=users)
 
 
 @app.route('/user/<username>')
 def user_profile(username):
-    return "<h1>This is the profile page of %s" % username
+    user = g.db.getUserByUsername(username)
+    return render_template('profile.html', user=user)
+
+
+@app.route('/user', methods=['POST'])
+def create_user():
+    username = request.form["username"]
+    name = request.form["name"]
+    password = request.form["password"]
+
+    results = g.db.createUser(
+        username=username,
+        name=name,
+        password=password)
+
+    if results is True:
+        flash('User creation successful', 'create_user_success')
+        return redirect(url_for('user_list'))
+    else:
+        session["message_create_user"] = "User creation failed!"
+        return redirect(url_for('user_list'))
 
 
 @app.route('/post/<int:post_id>')

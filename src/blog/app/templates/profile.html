@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+
+<h1>{{user.name}}</h1>
+<h4>Username: {{user.username}}</h4>
+
+{% if user.is_active == True %}
+    <span class="label label-success">Active</span>
+{% else %}
+    <span class="label label-default">Inactive</span>
+{% endif %}
+
+{% endblock %}
