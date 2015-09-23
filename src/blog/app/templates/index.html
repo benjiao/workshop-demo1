@@ -3,7 +3,7 @@
 {% block pagetitle %} Index {% endblock %}
 
 {% block content %}
-<h1>Welcome to Awesomeness!</h1>
+<h1>Welcome to Awesomeness, {{logged_user}}!</h1>
 <p>Server Time: {{server_time}}</p>
 
 <p> Click <a href="{{url_for('user_list')}}">here</a> to go to the Users page </p>

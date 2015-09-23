@@ -25,8 +25,9 @@ def login_required(test):
 @app.route('/')
 @login_required
 def index():
+    logged_user = session['username']
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    return render_template('index.html', server_time=current_time)
+    return render_template('index.html', server_time=current_time, logged_user=logged_user)
 
 
 @app.route('/user')
@@ -54,14 +55,7 @@ def post_page(user_id):
 
 @app.route('/login', methods=['GET'])
 def login_page():
-    return """
-    <h1>Login Page!</h1>
-    <form method='post' action='/login'>
-        <input type='text' name='username' /><br />
-        <input type='password' name='password' /><br />
-        <input type='submit' />
-    </form>
-    """
+    return render_template('login.html')
 
 
 @app.route('/login', methods=['POST'])
