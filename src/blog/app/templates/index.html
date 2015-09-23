@@ -1,0 +1,21 @@
+<html>
+    <head>
+        <title>Awesomeness!</title>
+        <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/bootstrap.min.css')}}"/>
+    </head>
+    <body>    
+        <div class="container">
+
+            <h1>Welcome to Awesomeness!</h1>
+            <p>Server Time: {{server_time}}</p>
+
+            <p> Click <a href="{{url_for('user_list')}}">here</a> to go to the Users page </p>
+            <p> Click <a href="{{url_for('user_profile', username='benjie')}}">here</a> to go to Benjie's Profile Page </p>
+
+        </div>
+
+        <script type="text/javascript" src="{{url_for('static', filename='js/jquery.min.js')}}"></script>
+        <script type="text/javascript" src="{{url_for('static', filename='js/bootstrap.min.js')}}"></script>
+
+    </body>
+</html>
