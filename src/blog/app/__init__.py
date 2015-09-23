@@ -77,3 +77,9 @@ def login_submit():
         print username
         session['username'] = "benjie"
         return "Success! Logged in as %s" % username
+
+
+@app.route('/logout')
+def logout():
+    session.pop('username', None)
+    return redirect('login')
