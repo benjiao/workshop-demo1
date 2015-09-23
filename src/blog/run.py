@@ -2,14 +2,17 @@
 Example 1. This demonstrates a barebones Flask application
 """
 
-from flask import Flask
+import logging
+from app import app
 
-app = Flask(__name__)
+app.config.from_object('config.Config')
 
-
-@app.route('/')
-def index():
-    return "<h1>Welcome to Flask!</h1>"
+# Setup Logging
+formatter = logging.Formatter(app.config.get('LOG_FORMAT'))
+fh = logging.FileHandler(filename=app.config.get('LOG_FILE'))
+fh.setFormatter(formatter)
+fh.setLevel(logging.DEBUG)
+app.logger.addHandler(fh)
 
 
 if __name__ == '__main__':
