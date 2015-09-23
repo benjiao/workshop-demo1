@@ -2,16 +2,35 @@ from flask import Flask
 from flask import render_template
 from datetime import datetime
 
+
+from flask import session
+from flask import request
+from functools import wraps
+from flask import redirect
+
 app = Flask(__name__)
 
 
+def login_required(test):
+    @wraps(test)
+    def wrap(*args, **kwargs):
+        if 'username' in session:
+            return test(*args, **kwargs)
+        else:
+            app.logger.info("Unauthorized access attempted!")
+            return redirect('login')
+    return wrap
+
+
 @app.route('/')
+@login_required
 def index():
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     return render_template('index.html', server_time=current_time)
 
 
 @app.route('/user')
+@login_required
 def user_list():
 
     users = [
@@ -35,9 +54,26 @@ def post_page(user_id):
 
 @app.route('/login', methods=['GET'])
 def login_page():
-    return "LOGIN!"
+    return """
+    <h1>Login Page!</h1>
+    <form method='post' action='/login'>
+        <input type='text' name='username' /><br />
+        <input type='password' name='password' /><br />
+        <input type='submit' />
+    </form>
+    """
 
 
 @app.route('/login', methods=['POST'])
 def login_submit():
-    return "LOGIN!"
+    username = request.form["username"]
+    password = request.form["password"]
+
+    app.logger.info("Someone tried to login! %s", username)
+
+    if password != "password":
+        return "Failed!"
+    else:
+        print username
+        session['username'] = "benjie"
+        return "Success! Logged in as %s" % username

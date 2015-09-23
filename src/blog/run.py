@@ -5,7 +5,9 @@ Example 1. This demonstrates a barebones Flask application
 import logging
 from app import app
 
+app.secret_key = "This is a secret"
 app.config.from_object('config.Config')
+
 
 # Setup Logging
 formatter = logging.Formatter(app.config.get('LOG_FORMAT'))
